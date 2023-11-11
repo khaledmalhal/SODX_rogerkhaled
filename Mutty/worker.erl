@@ -7,7 +7,7 @@ start(Name, Lock, Sleep, Work) ->
 
 init(Name, Lock, Sleep, Work) ->
     Gui = gui:start(Name),
-    {A1,A2,A3} = now(),
+    {A1,A2,A3} = erlang:timestamp(),
     random:seed(A1, A2, A3),
     Taken = worker(Name, Lock, [], Sleep, Work, Gui),
     Gui ! stop,
@@ -43,13 +43,13 @@ worker(Name, Lock, Taken, Sleep, Work, Gui) ->
     end.
 
 acquire(Name, Lock, Gui) ->
-  T1 = now(),
+  T1 = erlang:timestamp(),
   Gui ! waiting,
   Ref = make_ref(),
   Lock ! {take, self(), Ref},
   receive
       {taken, Ref} ->
-          T2 = now(),
+          T2 = erlang:timestamp(),
           T = timer:now_diff(T2, T1) div 1000,
           io:format("~s: lock taken in ~w ms~n", [Name, T]),
           Gui ! taken,
