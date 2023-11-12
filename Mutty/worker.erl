@@ -8,14 +8,14 @@ start(Name, Lock, Sleep, Work) ->
 init(Name, Lock, Sleep, Work) ->
     Gui = gui:start(Name),
     {A1,A2,A3} = erlang:timestamp(),
-    random:seed(A1, A2, A3),
+    rand:seed(A1, A2, A3),
     Taken = worker(Name, Lock, [], Sleep, Work, Gui),
     Gui ! stop,
     Lock ! stop,
     terminate(Name, Taken).
 
 worker(Name, Lock, Taken, Sleep, Work, Gui) ->
-    Sleeptime = random:uniform(Sleep),
+    Sleeptime = rand:uniform(Sleep),
     receive 
         stop ->
             Taken
@@ -27,7 +27,7 @@ worker(Name, Lock, Taken, Sleep, Work, Gui) ->
                 withdrawn ->
                     worker(Name, Lock, [T|Taken], Sleep, Work, Gui);
                 _ ->
-                    Worktime = random:uniform(Work),
+                    Worktime = rand:uniform(Work),
                     receive 
                         stop ->
                             Gui ! leave,
