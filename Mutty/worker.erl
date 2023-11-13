@@ -1,21 +1,28 @@
 -module(worker).
--export([start/4]).
+-export([start/2]).
 -define(withdrawal, 8000).
 
-start(Name, Lock, Sleep, Work) ->
-    spawn(fun() -> init(Name, Lock, Sleep, Work) end).
+start(ServerPid, MyName) ->
+    ServerPid ! {worker_join_req, MyName, self()},
+    process_requests().
+
+process_requests() ->
+    receive
+        {create_worker, Name, Lock, Sleep, Work} ->
+            spawn(fun() -> init(Name, Lock, Sleep, Work) end)
+    end.
 
 init(Name, Lock, Sleep, Work) ->
     Gui = gui:start(Name),
     {A1,A2,A3} = erlang:timestamp(),
-    rand:seed(A1, A2, A3),
+    random:seed(A1, A2, A3),
     Taken = worker(Name, Lock, [], Sleep, Work, Gui),
     Gui ! stop,
     Lock ! stop,
     terminate(Name, Taken).
 
 worker(Name, Lock, Taken, Sleep, Work, Gui) ->
-    Sleeptime = rand:uniform(Sleep),
+    Sleeptime = random:uniform(Sleep),
     receive 
         stop ->
             Taken
@@ -27,7 +34,7 @@ worker(Name, Lock, Taken, Sleep, Work, Gui) ->
                 withdrawn ->
                     worker(Name, Lock, [T|Taken], Sleep, Work, Gui);
                 _ ->
-                    Worktime = rand:uniform(Work),
+                    Worktime = random:uniform(Work),
                     receive 
                         stop ->
                             Gui ! leave,

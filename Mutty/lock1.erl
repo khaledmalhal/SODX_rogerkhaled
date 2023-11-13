@@ -20,6 +20,9 @@ open(Nodes) ->
         {request, From,  Ref} ->
             From ! {ok, Ref},
             open(Nodes);
+        {update, From} ->
+            NewNodes = [From|Nodes],
+            open(NewNodes);
         stop ->
             ok
     end.
