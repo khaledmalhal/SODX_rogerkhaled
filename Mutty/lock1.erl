@@ -22,6 +22,7 @@ open(Nodes) ->
             open(Nodes);
         {update, From} ->
             NewNodes = [From|Nodes],
+            io:format("Updated LockPids: ~p~n", [NewNodes]),
             open(NewNodes);
         stop ->
             ok
