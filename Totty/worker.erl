@@ -7,7 +7,7 @@ start(Name, Grp, Module, Id, Sleep, Jitter) ->
     spawn(fun() -> init(Name, Grp, Module, Id, Sleep, Jitter) end).
 
 init(Name, Grp, Module, Id, Sleep, Jitter) ->
-    {A1,A2,A3} = now(),
+    {A1,A2,A3} = erlang:timestamp(),
     random:seed(A1, A2, A3),
     Gui = gui:start(Name),
     Cast = apply(Module, start, [Id, self(), Jitter]),

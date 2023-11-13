@@ -5,7 +5,7 @@ start(Id, Master, Jitter) ->
     spawn(fun() -> init(Id, Master, Jitter) end).
 
 init(Id, Master, Jitter) ->
-    {A1,A2,A3} = now(),
+    {A1,A2,A3} = erlang:timestamp(),
     random:seed(A1, A2, A3),
     receive
         {peers, Nodes} ->
