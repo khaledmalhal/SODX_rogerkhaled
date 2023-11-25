@@ -5,7 +5,7 @@ start(Id, Master, Jitter) ->
     spawn(fun() -> init(Id, Master, Jitter) end).
 
 init(Id, Master, Jitter) ->
-    {A1,A2,A3} = now(),
+    {A1,A2,A3} = erlang:timestamp(),
     random:seed(A1, A2, A3),
     receive
         {peers, Nodes} ->
@@ -46,21 +46,21 @@ end.
 request(Ref, Msg, Nodes, 0) ->
     Self = self(),
     lists:foreach(fun(Node) ->
-                      Node ! {request, Self, Ref, Msg}  %%TODO: ADD SOME CODE
+                      Node ! {request, Self, Ref, Msg}
                   end,
                   Nodes);
 request(Ref, Msg, Nodes, Jitter) ->
     Self = self(),
     lists:foreach(fun(Node) ->
                       timer:sleep(random:uniform(Jitter)),
-                      Node ! {request, Self, Ref, Msg}  %%TODO: ADD SOME CODE
+                      Node ! {request, Self, Ref, Msg}
                   end,
                   Nodes).
 
 %% Sending an agreed message to all nodes
 agree(Ref, Seq, Nodes) ->
     lists:foreach(fun(Pid) ->
-                      Pid ! {agreed, Ref, Seq}  %%TODO: ADD SOME CODE
+                      Pid ! {agreed, Ref, Seq}
                   end,
                   Nodes).
 
