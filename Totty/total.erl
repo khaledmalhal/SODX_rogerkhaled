@@ -21,7 +21,7 @@ receive
         server(Master, MaxPrp, MaxAgr, Nodes, NewCast, Queue, Jitter);
     {request, From, Ref, Msg} ->
         NewMaxPrp = seq:increment(MaxPrp),
-        From ! {proposal, self(), Ref, NewMaxPrp},
+        From ! {proposal, Ref, NewMaxPrp},
         NewQueue = insert(Ref, Msg, NewMaxPrp, Queue),
         server(Master, NewMaxPrp, MaxAgr, Nodes, Cast, NewQueue, Jitter);
     {proposal, Ref, Proposal} ->
