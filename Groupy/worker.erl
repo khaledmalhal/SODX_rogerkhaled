@@ -23,10 +23,10 @@ init(Name, Module, Peer, Sleep) ->
             Cast ! {mcast, {state_req, Ref}},
             Color = state_transfer(Cast, Ref),
             if Color /= stop ->
-                 init_cont(Name, Cast, Color, Sleep),
-                 Cast ! stop;
+                init_cont(Name, Cast, Color, Sleep),
+                Cast ! stop;
                true ->
-                 Cast ! stop
+                Cast ! stop
             end;
         {error, Error} ->
             io:format("worker ~s: error: ~s~n", [Name, Error]);
@@ -51,7 +51,7 @@ state_transfer(Cast, Ref) ->
     end.
 
 init_cont(Name, Cast, Color, Sleep) ->
-    {A1,A2,A3} = now(),
+    {A1,A2,A3} = erlang:timestamp(),
     random:seed(A1, A2, A3),
     Gui = gui:start(Name, self()),
     Gui ! {color, Color}, 
