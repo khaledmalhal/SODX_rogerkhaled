@@ -25,4 +25,3 @@ stop(Name) ->
         Pid ->
             Pid ! stop
     end.
-

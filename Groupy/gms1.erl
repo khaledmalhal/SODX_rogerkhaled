@@ -10,10 +10,10 @@ init(Name, Master) ->
 
 start(Name, Grp) ->
     Self = self(),
-    spawn_link(fun()-> init(Name, Grp, Self) end).    
+    spawn_link(fun()-> init(Name, Grp, Self) end).
 
 init(Name, Grp, Master) ->
-    Self = self(), 
+    Self = self(),
     Grp ! {join, Self},
     receive
         {view, Leader, Slaves} ->
@@ -24,35 +24,36 @@ init(Name, Grp, Master) ->
 leader(Name, Master, Slaves) ->    
     receive
         {mcast, Msg} ->
-            bcast(Name, ..., ...),  %% TODO: COMPLETE
-            %% TODO: ADD SOME CODE
+            bcast(Name, {msg, Msg}, Slaves),
+            Master ! {deliver, Msg},
             leader(Name, Master, Slaves);
         {join, Peer} ->
-            NewSlaves = lists:append(Slaves, [Peer]),           
-            bcast(Name, ..., ...),  %% TODO: COMPLETE
-            leader(Name, Master, ...);  %% TODO: COMPLETE
+            NewSlaves = lists:append(Slaves, [Peer]),
+            io:format("Sending leader's PID (~w) to slaves (~w) ~n", [self(), NewSlaves]),
+            bcast(Name, {view, self(), NewSlaves}, NewSlaves),
+            leader(Name, Master, NewSlaves);
         stop ->
             ok;
         Error ->
             io:format("leader ~s: strange message ~w~n", [Name, Error])
     end.
-    
+
 bcast(_, Msg, Nodes) ->
     lists:foreach(fun(Node) -> Node ! Msg end, Nodes).
 
-slave(Name, Master, Leader, Slaves) ->    
+slave(Name, Master, Leader, Slaves) ->
     receive
         {mcast, Msg} ->
-            %% TODO: ADD SOME CODE
+            Leader ! {mcast, Msg},
             slave(Name, Master, Leader, Slaves);
         {join, Peer} ->
-            %% TODO: ADD SOME CODE
+            Leader ! {join, Peer},
             slave(Name, Master, Leader, Slaves);
         {msg, Msg} ->
-            %% TODO: ADD SOME CODE
+            Master ! {deliver, Msg},
             slave(Name, Master, Leader, Slaves);
         {view, Leader, NewSlaves} ->
-            slave(Name, Master, Leader, ...);  %% TODO: COMPLETE
+            slave(Name, Master, Leader, NewSlaves);
         stop ->
             ok;
         Error ->

@@ -12,7 +12,7 @@ init(Name, Master) ->
     loop(Frame, Master).
 
 make_frame(Name) ->       %Name is the window title
-    Server = wx:new(),  %Server will be the parent for the Frame
+    Server = wx:new(),    %Server will be the parent for the Frame
     Frame = wxFrame:new(Server, -1, Name, [{size,{?width, ?height}}]),
     wxFrame:setBackgroundColour(Frame, ?wxBLACK),
     wxFrame:show(Frame),
@@ -24,7 +24,7 @@ loop(Frame, Master)->
     receive
         %check if the window was closed by the user
         #wx{event=#wxClose{}} ->
-            wxWindow:destroy(Frame),  
+            wxWindow:destroy(Frame),
             Master ! stop,
             ok;
         {color, Color} ->

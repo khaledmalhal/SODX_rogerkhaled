@@ -25,7 +25,7 @@ init(Name, Module, Peer, Sleep) ->
             if Color /= stop ->
                 init_cont(Name, Cast, Color, Sleep),
                 Cast ! stop;
-               true ->
+            true ->
                 Cast ! stop
             end;
         {error, Error} ->
@@ -44,7 +44,7 @@ state_transfer(Cast, Ref) ->
         {join, Peer} ->
             Cast ! {join, Peer},
             state_transfer(Cast, Ref);
-        stop -> 
+        stop ->
             stop;
         _Ignore ->
             state_transfer(Cast, Ref)
@@ -54,7 +54,7 @@ init_cont(Name, Cast, Color, Sleep) ->
     {A1,A2,A3} = erlang:timestamp(),
     random:seed(A1, A2, A3),
     Gui = gui:start(Name, self()),
-    Gui ! {color, Color}, 
+    Gui ! {color, Color},
     Wait = if Sleep == 0 -> 0; true -> random:uniform(Sleep) end,
     timer:send_after(Wait, cast_change),
     worker(Name, Cast, Color, Gui, Sleep),
