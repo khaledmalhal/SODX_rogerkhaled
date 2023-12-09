@@ -5,7 +5,7 @@
 
 start(Module, Sleep) ->
     P = worker:start("P1", Module, Sleep),
-    register(a, P), 
+    register(a, P),
     register(b, worker:start("P2", Module, P, Sleep)),
     register(c, worker:start("P3", Module, P, Sleep)),
     register(d, worker:start("P4", Module, P, Sleep)),

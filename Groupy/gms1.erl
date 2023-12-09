@@ -29,7 +29,7 @@ leader(Name, Master, Slaves) ->
             leader(Name, Master, Slaves);
         {join, Peer} ->
             NewSlaves = lists:append(Slaves, [Peer]),
-            io:format("Sending leader's PID (~w) to slaves (~w) ~n", [self(), NewSlaves]),
+            io:format("Leader (~w): Peer wants to join (~w) ~n", [self(), Peer]),
             bcast(Name, {view, self(), NewSlaves}, NewSlaves),
             leader(Name, Master, NewSlaves);
         stop ->
@@ -48,6 +48,7 @@ slave(Name, Master, Leader, Slaves) ->
             slave(Name, Master, Leader, Slaves);
         {join, Peer} ->
             Leader ! {join, Peer},
+            io:format("Slave (~w): Peer (~w) wants to join ~n", [self(), Peer]),
             slave(Name, Master, Leader, Slaves);
         {msg, Msg} ->
             Master ! {deliver, Msg},
