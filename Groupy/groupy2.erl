@@ -23,10 +23,10 @@ start(Name, Peer) ->
 
 start(Name, Module, Sleep) ->
     %% Start function for the Leader specifically (or the first iteration).
-    P = worker:start(Name, Module, Sleep),
-    io:format("Registering ~w~n", [P]),
-    register(leader, P),
-    register(requests, spawn(fun() -> process_requests([leader], 1, Module, Sleep) end)).
+    Pid = worker:start(Name, Module, Sleep),
+    Atom = list_to_atom(string:lowercase(Name)),
+    io:format("Registering ~w, ~w~n", [Atom, Pid]),
+    register(requests, spawn(fun() -> process_requests([Atom], 1, Module, Sleep) end)).
 
 start(Name, Module, Sleep, Peer) ->
     %% Start function for the first iteration in a new terminal.
