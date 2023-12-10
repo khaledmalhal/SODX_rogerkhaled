@@ -1,12 +1,15 @@
 -module(gms2).
 -export([start/1, start/2]).
 -define(timeout, 1000).
+-define(arghh, 100).
 
 start(Name) ->
     Self = self(),
     spawn_link(fun()-> init(Name, Self) end).
 
 init(Name, Master) ->
+    {A1,A2,A3} = erlang:timestamp(),
+    random:seed(A1, A2, A3),
     leader(Name, Master, []).
 
 start(Name, Grp) ->
@@ -14,6 +17,8 @@ start(Name, Grp) ->
     spawn_link(fun()-> init(Name, Grp, Self) end).
 
 init(Name, Grp, Master) ->
+    {A1,A2,A3} = erlang:timestamp(),
+    random:seed(A1, A2, A3),
     Self = self(),
     Grp ! {join, Self},
     receive
@@ -55,8 +60,17 @@ leader(Name, Master, Slaves) ->
             io:format("leader ~s: strange message ~w~n", [Name, Error])
     end.
 
-bcast(_, Msg, Nodes) ->
-    lists:foreach(fun(Node) -> Node ! Msg end, Nodes).
+bcast(Name, Msg, Nodes) ->
+    lists:foreach(fun(Node) -> Node ! Msg, crash(Name, Msg) end, Nodes).
+
+crash(Name, Msg) ->
+    case random:uniform(?arghh) of
+        ?arghh ->
+            io:format("leader ~s CRASHED: msg ~w~n", [Name, Msg]),
+            exit(no_luck);
+        _ ->
+            ok
+end.
 
 slave(Name, Master, Leader, Slaves, MonitorRef) ->
     receive
