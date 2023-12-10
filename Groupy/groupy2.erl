@@ -26,6 +26,7 @@ start(Name, Module, Sleep) ->
     Pid = worker:start(Name, Module, Sleep),
     Atom = list_to_atom(string:lowercase(Name)),
     io:format("Registering ~w, ~w~n", [Atom, Pid]),
+    register(Atom, Pid),
     register(requests, spawn(fun() -> process_requests([Atom], 1, Module, Sleep) end)).
 
 start(Name, Module, Sleep, Peer) ->
